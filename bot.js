@@ -1,6 +1,10 @@
 var mysql      = require('mysql');
 var bb = require('bot-brother');
 const fs = require('fs');
+const opt = {
+    parse_mode: 'HTML',
+    //disable_notification: false
+}
 
 var connection = mysql.createConnection({
     host     : 'localhost',
@@ -14,6 +18,27 @@ var bot = bb({
     polling: {interval: 0, timeout: 1}
 });
 connection.connect();
+
+setInterval(timers1(bot), 7000);
+function timers1(bot){
+//    //bot.withContext(function (ctx) {
+//    //   console.log('2');
+//    //});
+//    //bot.command('sendMailTo')
+//    //    .invoke(function (ctx) {
+//    //        return ctx.go('sendMail')
+//    //    });
+//   //bot.api.invoke(function (ctx) {
+//   //     return ctx.go('sendMail');
+//   // });
+//   // bot.api.go('sendMail');
+//   // bot.api.answer(function (ctx) {
+//   //     return ctx.bot.go('sendMail');
+//   // });
+    var ctx = bot.sessionManager.get(330957326);
+//
+    console.log(ctx);
+}
 
 function saveImage(filename, data){
     var myBuffer = new Buffer(data.length);
@@ -39,18 +64,18 @@ bot.keyboard('cancelButton', [
 bot.command('start')
     //TODO get id(user) if not exist - add to database
     .invoke(function (ctx) {
+        var ID = ctx.meta.user.id;
         // Setting data, data is used in text message templates.
         ctx.data.user = ctx.meta.user;
         // Invoke callback must return promise.
+        console.log(ID);
 
         return ctx.sendMessage('Hello <%=user.first_name%>. How are you?');
-
     })
 
     .answer(function (ctx) {
         ctx.data.answer = ctx.answer;
         // Returns promise.
-        console.log(ctx);
 
         if (ctx.data.answer == 'bad'){
             var img;
@@ -72,23 +97,34 @@ bot.command('start')
         else{
             return ctx.sendMessage('send').then(function(res){
                 console.log(res);
-                ctx.forwardMessage('330957326', res.message_id)
+                ctx.forwardMessage('@DaimonXXX', res.message_id)
             });
         }
     })
     .answer(function (ctx) {
         return ctx.sendMessage('Lol');
     }).keyboard([
-        [{'bad2': 'bad'}],
-        [{'send': 'good'}],
-        [{'back': {go: 'start'}}]
-    ])
-module.exports = function send(){
-    bot.command('sendMail')
-        .invoke(function(ctx){
-            return ctx.sendMessage('error');
-        });
-}
+    [{'bad2': 'bad'}],
+    [{'good': 'good'}],
+    [{'send': 'send'}],
+    [{'back': {go: 'start'}}]
+])
+
+// TODO function wich send msg to all users
+
+bot.command('sendMail')
+    .invoke(function(){
+        return bot.api.sendMessage(
+            '330957326',
+            '<b style="width: 100%">Table "MilanB1"</b><i style="width: 100%">Only this weekend</i><a style="width: 100%" href="http://designloft.com.ua/Pismennye-stoly-loft/Stol-Milan-B1-Signal-Polsha-Milan-B1" target="_blank">More Info</a>',
+            opt);
+        //console.log('send')
+
+    });
+
+
+
+
 // Creating command '/upload_photo'.
 bot.command('upload_photo')
     .invoke(function (ctx) {
