@@ -1,4 +1,4 @@
-var mysql      = require('mysql');
+//var mysql      = require('mysql');
 var bb = require('bot-brother');
 const fs = require('fs');
 const opt = {
@@ -6,12 +6,12 @@ const opt = {
     //disable_notification: false
 }
 const sessionsDir = './cache';
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'baget',
-    password : 'baget',
-    database : 'bot'
-});
+//var connection = mysql.createConnection({
+//    host     : 'localhost',
+//    user     : 'baget',
+//    password : 'baget',
+//    database : 'bot'
+//});
 var bot = bb({
     key: '302730518:AAFet3ystJlBX3PQNffdXfg9DG5kFb0pUlI',
     sessionManager: bb.sessionManager.memory({dir: sessionsDir}),
@@ -21,7 +21,7 @@ var bot = bb({
 
 
 
-connection.connect();
+//connection.connect();
 
 
 var interval = setInterval(timer, 7000, bot);
@@ -91,29 +91,29 @@ bot.command('start')
         ctx.data.answer = ctx.answer;
         // Returns promise.
 
-        if (ctx.data.answer == 'bad'){
-            var img;
-
-            connection.query('SELECT * from settings', function(err, rows, fields) {
-                img = rows[1].body;
-
-                if (!err){
-                    console.log('The solution is: ', rows[1].body);
-                    saveImage("image.jpg", img);
-                    return ctx.sendPhoto(img);
-                }
-                else{
-                    console.log('no');
-                    return ctx.sendMessage('error')
-                }
-            });
-        }
-        else{
-            return ctx.sendMessage('send').then(function(res){
-                console.log(res);
-                ctx.forwardMessage('@DaimonXXX', res.message_id)
-            });
-        }
+        //if (ctx.data.answer == 'bad'){
+        //    var img;
+        //
+        //    connection.query('SELECT * from settings', function(err, rows, fields) {
+        //        img = rows[1].body;
+        //
+        //        if (!err){
+        //            console.log('The solution is: ', rows[1].body);
+        //            saveImage("image.jpg", img);
+        //            return ctx.sendPhoto(img);
+        //        }
+        //        else{
+        //            console.log('no');
+        //            return ctx.sendMessage('error')
+        //        }
+        //    });
+        //}
+        //else{
+        //    return ctx.sendMessage('send').then(function(res){
+        //        console.log(res);
+        //        ctx.forwardMessage('@DaimonXXX', res.message_id)
+        //    });
+        //}
     })
     .answer(function (ctx) {
         return ctx.sendMessage('Lol');
