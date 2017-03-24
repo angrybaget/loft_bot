@@ -85,6 +85,7 @@ bot.keyboard('cancelButton', [
 //COMMANDS
 bot.command('start')
     .invoke(function (ctx) {
+        ctx.data.user = ctx.meta.user;
         return ctx.sendMessage('Привет <%=user.first_name%>. Ты подписался на новости Design Loft, теперь ты будешь в курсе новинок)');
     })
 
