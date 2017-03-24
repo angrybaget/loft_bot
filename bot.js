@@ -5,7 +5,7 @@ const opt = {
     parse_mode: 'HTML',
     //disable_notification: false
 }
-const sessionsDir = 'D:/Job/Projects/bot/cache';
+const sessionsDir = '/cache';
 var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'baget',
