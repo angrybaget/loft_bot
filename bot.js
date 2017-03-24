@@ -1,17 +1,11 @@
-//var mysql      = require('mysql');
 var bb = require('bot-brother');
 const fs = require('fs');
+const sessionsDir = './cache';
+
 const opt = {
     parse_mode: 'HTML',
-    //disable_notification: false
-}
-const sessionsDir = './cache';
-//var connection = mysql.createConnection({
-//    host     : 'localhost',
-//    user     : 'baget',
-//    password : 'baget',
-//    database : 'bot'
-//});
+    disable_notification: false
+};
 var bot = bb({
     key: '302730518:AAFet3ystJlBX3PQNffdXfg9DG5kFb0pUlI',
     sessionManager: bb.sessionManager.memory({dir: sessionsDir}),
@@ -19,145 +13,89 @@ var bot = bb({
 });
 
 
+function sendMsg(id, msg) {
+    try {
+        console.log('send MSG' + id);
+        bot.withContext(id, function (ctx2) {
+            bot.api.sendMessage(id, msg, opt).then(function(res){
+
+            }, function (err) {
+                console.log('*********errors ' + err.toString());
+            })
+
+        })
+    } catch (err) {
 
 
-//connection.connect();
-
-
-var interval = setInterval(timer, 7000, bot);
-function timer(bot){
-
-    //TODO wrap with function wich check database status
-    bot.withContext(330957326, function(ctx2){
-        return ctx2.go('sendMail');
-    })
-}
-
-function saveImage(filename, data){
-    var myBuffer = new Buffer(data.length);
-    for (var i = 0; i < data.length; i++) {
-        myBuffer[i] = data[i];
     }
-    fs.writeFile("D:\\" + filename, myBuffer, function(err) {
-        if(err) {
-            console.log(err);
-        } else {
-            console.log("The file was saved!");
-        }
-    });
+
 }
-function arrayUsers(){
-    fs.readdir(sessionsDir, function(err, files){
-        files = files.map(function(file){
-            var a = file.replace(/[0-9]+\./, '');
-            a = a.replace(".json", "");
-            console.log(a);
-            return a
-        });
-        return files
+
+function arrayUsers() {
+    var files = [],
+        files = fs.readdirSync(sessionsDir);
+    files = files.map(function (file) {
+        var a = file.replace(/[0-9]+\./, '');
+        a = a.replace(".json", "");
+        return a
     });
+    return files
 };
 
+var interval = setInterval(timer, 7000, bot);
+function timer(bot) {
+    var news = [],
+        usersSend = [],
+        news = shedule();
+    if (news.length > 0) {
+        usersSend = arrayUsers();
+        if (usersSend.length > 0) {
+            for (user in usersSend) {
+                for (msg in news) {
+                    sendMsg(usersSend[user], news[msg]);
+                }
+            }
+        }
 
-arrayUsers();
+    }
+    //TODO wrap with function wich check database status
+
+}
 
 
+//News wich like to send
+function shedule() {
+    var arr = [];
+    arr.push('<b>Bold New</b><i>Italic New</i>');
+    arr.push('<b>Bold Old</b><i>Italic Old</i>');
+
+    return arr;
+}
 
 
-
-
-bot.keyboard('footer', [{':arrow_backward:': {go: 'start'}}]);
+bot.keyboard('footer', [{'Подписаться на новости': {go: 'start'}}]);
 bot.keyboard('cancelButton', [
     [{
-        'button.cancel': {go: 'start'}
+        'Подписаться на новости': {go: 'start'}
     }]
 ])
-// Let's create command '/start'.
-bot.command('start')
-    //TODO get id(user) if not exist - add to database
-    .invoke(function (ctx) {
-        var ID = ctx.meta.user.id;
-        //var check = JSON.stringify(ctx, "",4);
-        //connection.query('INSERT INTO settings (name, body, context) VALUES ?', ['baga',null,JSON.stringify(ctx)]);
-        // Setting data, data is used in text message templates.
-        ctx.data.user = ctx.meta.user;
-        // Invoke callback must return promise.
-        //console.log(ctx);
 
-        return ctx.sendMessage('Hello <%=user.first_name%>. How are you?');
+//COMMANDS
+bot.command('start')
+    .invoke(function (ctx) {
+        return ctx.sendMessage('Привет <%=user.first_name%>. Ты подписался на новости Design Loft, теперь ты будешь в курсе новинок)');
     })
 
     .answer(function (ctx) {
         ctx.data.answer = ctx.answer;
-        // Returns promise.
-
-        //if (ctx.data.answer == 'bad'){
-        //    var img;
-        //
-        //    connection.query('SELECT * from settings', function(err, rows, fields) {
-        //        img = rows[1].body;
-        //
-        //        if (!err){
-        //            console.log('The solution is: ', rows[1].body);
-        //            saveImage("image.jpg", img);
-        //            return ctx.sendPhoto(img);
-        //        }
-        //        else{
-        //            console.log('no');
-        //            return ctx.sendMessage('error')
-        //        }
-        //    });
-        //}
-        //else{
-        //    return ctx.sendMessage('send').then(function(res){
-        //        console.log(res);
-        //        ctx.forwardMessage('@DaimonXXX', res.message_id)
-        //    });
-        //}
     })
     .answer(function (ctx) {
         return ctx.sendMessage('Lol');
     }).keyboard([
-    [{'bad2': 'bad'}],
-    [{'good': 'good'}],
-    [{'send': 'send'}],
-    [{'back': {go: 'start'}}]
-])
+    [{'Поблагодарить :point_up:': {go: 'tnx'}}]
+]);
 
-// TODO function wich send msg to all users
-
-bot.command('sendMail')
-    .invoke(function(){
-        return bot.api.sendMessage(
-            '330957326',
-            '<b style="width: 100%">Table "MilanB1"</b><i style="width: 100%">Only this weekend</i><a style="width: 100%" href="http://designloft.com.ua/Pismennye-stoly-loft/Stol-Milan-B1-Signal-Polsha-Milan-B1" target="_blank">More Info</a>',
-            opt);
-        //console.log('send')
-
-    });
-
-
-
-
-// Creating command '/upload_photo'.
-bot.command('upload_photo')
+bot.command('tnx')
     .invoke(function (ctx) {
-        return ctx.sendMessage('Drop me a photo, please');
-    })
-    .answer(function (ctx) {
-        // ctx.message is an object that represents Message.
-        // See https://core.telegram.org/bots/api#message
-        return ctx.sendPhoto(ctx.message.photo[0].file_id, {caption: 'I got your photo!'});
-    });
-
-
-
-bot.command('end')
-    .invoke(function(ctx){
-        bot.withContext(330957326, function(ctx2){
-            console.log(ctx2);
-        })
-    })
-    .answer(function(){
-
+        return ctx.sendMessage('Спасибо ждите новостей :point_up:');
     });

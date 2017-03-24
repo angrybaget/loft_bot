@@ -1,4 +1,4 @@
-var mysql      = require('mysql');
+
 
 var bb = require('bot-brother');
 
@@ -8,9 +8,3 @@ var bot = bb({
     polling: {interval: 0, timeout: 1}
 });
 
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'baget',
-    password : 'baget',
-    database : 'bot'
-});
