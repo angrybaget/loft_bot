@@ -44,7 +44,7 @@ function deleteSession(id){
         console.log('deleted file directory ' + sessionsDir + '/' + nameDel)
 };
 
-var interval = setInterval(timer, 7000, bot);
+var interval = setInterval(timer, 300000, bot);
 function timer(bot) {
     var news = [],
         usersSend = [],
