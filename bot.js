@@ -11,35 +11,37 @@ var bot = bb({
     sessionManager: bb.sessionManager.memory({dir: sessionsDir}),
     polling: {interval: 0, timeout: 1}
 });
+var prefix = '';
 
 
 function sendMsg(id, msg) {
-    try {
-        console.log('send MSG' + id);
         bot.withContext(id, function (ctx2) {
-            bot.api.sendMessage(id, msg, opt).then(function(res){
-
-            }, function (err) {
-                console.log('*********errors ' + err.toString());
+            bot.api.sendMessage(id, msg, opt).then(function(res){}, function (err) {
+                deleteSession(id);
             })
 
         })
-    } catch (err) {
-
-
-    }
-
 }
 
 function arrayUsers() {
     var files = [],
         files = fs.readdirSync(sessionsDir);
+    if (files.length > 0){
+        prefix = files[0].split('.')[0];
+    }
     files = files.map(function (file) {
         var a = file.replace(/[0-9]+\./, '');
         a = a.replace(".json", "");
         return a
     });
+
     return files
+};
+
+function deleteSession(id){
+    var nameDel = sessionsDir + '/' + prefix + '.' + id +'.json';
+        fs.unlink(nameDel, function(response) {console.log(response)});
+        console.log('deleted file directory ' + sessionsDir + '/' + nameDel)
 };
 
 var interval = setInterval(timer, 7000, bot);
