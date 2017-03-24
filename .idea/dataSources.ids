@@ -18,7 +18,13 @@
       <column id="4" parent="2" name="name">
         <data-type>varchar(45)</data-type>
       </column>
-      <key id="5" parent="2" name="PRIMARY">
+      <column id="5" parent="2" name="body">
+        <data-type>blob</data-type>
+      </column>
+      <column id="6" parent="2" name="context">
+        <data-type>text</data-type>
+      </column>
+      <key id="7" parent="2" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>

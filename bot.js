@@ -5,7 +5,7 @@ const opt = {
     parse_mode: 'HTML',
     //disable_notification: false
 }
-
+const sessionsDir = 'D:/Job/Projects/bot/cache';
 var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'baget',
@@ -14,30 +14,23 @@ var connection = mysql.createConnection({
 });
 var bot = bb({
     key: '302730518:AAFet3ystJlBX3PQNffdXfg9DG5kFb0pUlI',
-    sessionManager: bb.sessionManager.memory(),
+    sessionManager: bb.sessionManager.memory({dir: sessionsDir}),
     polling: {interval: 0, timeout: 1}
 });
+
+
+
+
 connection.connect();
 
-setInterval(timers1(bot), 7000);
-function timers1(bot){
-//    //bot.withContext(function (ctx) {
-//    //   console.log('2');
-//    //});
-//    //bot.command('sendMailTo')
-//    //    .invoke(function (ctx) {
-//    //        return ctx.go('sendMail')
-//    //    });
-//   //bot.api.invoke(function (ctx) {
-//   //     return ctx.go('sendMail');
-//   // });
-//   // bot.api.go('sendMail');
-//   // bot.api.answer(function (ctx) {
-//   //     return ctx.bot.go('sendMail');
-//   // });
-    var ctx = bot.sessionManager.get(330957326);
-//
-    console.log(ctx);
+
+var interval = setInterval(timer, 7000, bot);
+function timer(bot){
+
+    //TODO wrap with function wich check database status
+    bot.withContext(330957326, function(ctx2){
+        return ctx2.go('sendMail');
+    })
 }
 
 function saveImage(filename, data){
@@ -53,6 +46,25 @@ function saveImage(filename, data){
         }
     });
 }
+function arrayUsers(){
+    fs.readdir(sessionsDir, function(err, files){
+        files = files.map(function(file){
+            var a = file.replace(/[0-9]+\./, '');
+            a = a.replace(".json", "");
+            console.log(a);
+            return a
+        });
+        return files
+    });
+};
+
+
+arrayUsers();
+
+
+
+
+
 
 bot.keyboard('footer', [{':arrow_backward:': {go: 'start'}}]);
 bot.keyboard('cancelButton', [
@@ -65,10 +77,12 @@ bot.command('start')
     //TODO get id(user) if not exist - add to database
     .invoke(function (ctx) {
         var ID = ctx.meta.user.id;
+        //var check = JSON.stringify(ctx, "",4);
+        //connection.query('INSERT INTO settings (name, body, context) VALUES ?', ['baga',null,JSON.stringify(ctx)]);
         // Setting data, data is used in text message templates.
         ctx.data.user = ctx.meta.user;
         // Invoke callback must return promise.
-        console.log(ID);
+        //console.log(ctx);
 
         return ctx.sendMessage('Hello <%=user.first_name%>. How are you?');
     })
@@ -134,4 +148,16 @@ bot.command('upload_photo')
         // ctx.message is an object that represents Message.
         // See https://core.telegram.org/bots/api#message
         return ctx.sendPhoto(ctx.message.photo[0].file_id, {caption: 'I got your photo!'});
+    });
+
+
+
+bot.command('end')
+    .invoke(function(ctx){
+        bot.withContext(330957326, function(ctx2){
+            console.log(ctx2);
+        })
+    })
+    .answer(function(){
+
     });
