@@ -83,6 +83,41 @@ bot.keyboard('cancelButton', [
 ])
 
 //COMMANDS
+
+//TODO subscribe, unsubscribe, send
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 bot.command('start')
     .invoke(function (ctx) {
         ctx.data.user = ctx.meta.user;
